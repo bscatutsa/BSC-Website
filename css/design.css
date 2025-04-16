@@ -1,0 +1,356 @@
+/*------ constant ------*/
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+/*------ variables ------*/
+/* rectangular button var */
+.rect-btn{
+    display: inline-block;
+    text-decoration: none;
+    color: #FFFFFF;
+    border: 2.5px solid #FFFFFF;
+    padding: 12px 34px;
+    font-size: 13px;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+}
+.rect-btn:hover{
+    border: 2.5px solid #D3430D;
+    color: white;
+    background: #D3430D;
+    transition: 1s;
+}
+/* logo var */
+.logo {
+    width: 150px;
+    height: 150px;
+    background: var(--logo-bg);
+    border-radius: 10px;
+    padding: 10px; /* Adjust padding for better fit */
+    box-sizing: border-box;
+    backdrop-filter: blur(8px) brightness(1.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 4px solid #0c2340; /* Subject to Change */
+
+    /* Positioning */
+    position: absolute;
+    top: 30px;
+    left: 30px;
+
+    /* Center image inside */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Ensures the image doesn't escape the box */
+}
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Keeps the whole image visible inside the box */
+    border-radius: 10px; /* Matches the .logo box */
+}
+hr {
+    border: none;
+    height: 1px;
+    background-color: black;
+}
+.bold-line {
+    height: 4px;
+    background-color: #D3430D;
+}
+
+/*------ header ------*/
+.header{
+    min-height: 70vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(4,9,30,0.7),rgba(4,9,30,0.7)),url(../images/placeholders/utsa_downtown.webp);
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+/* nav div */
+nav{
+    display: flex;
+    padding: 2% 6%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links{
+    flex: 1;
+    text-align: right;
+}
+.nav-links ul li{
+    list-style: none;
+    display: inline-block;
+    padding: 8px 12px;
+    position: relative;
+}
+.nav-links ul li a{
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 20px;
+}
+.nav-links ul li::after{
+    content: '';
+    width: 0%;
+    height:2px;
+    background: #D3430D;
+    display: block;
+    margin: auto;
+    transition: 0.5s;
+}
+.nav-links ul li:hover::after{
+    width: 100%;
+}
+
+/* title div */
+.title{
+    width: 90%;
+    color: #FFFFFF;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    margin-top: 5%;
+}
+.title h1{
+    font-size: 62px;
+    font-style: italic;
+}
+.title p{
+    margin: 20px auto;
+    font-size: 15px;
+    color: #FFFFFF;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+/*------ background ------*/
+.background{
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 75px;
+    min-height: 400px;
+}
+.background h1{
+    font-size: 36px;
+    font-weight: 600;
+}
+.background p{
+    margin: 20px auto;
+    font-size: 15px;
+    color: black;
+    max-width: 600px;
+    line-height: 1.6;
+}
+.background img {
+    transition: transform 0.3s ease-in-out;
+}
+
+.background img:hover {
+    transform: scale(1.1); /* Slightly enlarges the logo */
+}
+
+
+/* rows & columns */
+.row{
+    margin-top: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+.col{
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.col img{
+    height: 300px;
+    width: 300px;
+    display: block;
+    margin: 0 auto;
+    align-self: center;
+    padding-top: 10px;
+    border-radius: 10px;
+    padding: 10px; /* Adjust padding for better fit */
+    box-sizing: border-box;
+    backdrop-filter: blur(8px) brightness(1.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    border: 2.5px solid black; /* Subject to Change */
+    transition: 0.5s;
+}
+.col img:hover{
+    box-shadow: 0 0 20px 0px rgba(0,0,0,0.5);
+}
+
+/*------ we offer ------*/
+.offer{
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 75px;
+    min-height: 400px;
+}
+.offer h1{
+    font-size: 36px;
+    font-weight: 600;
+    padding-bottom: 5%;
+    padding-top: 5%;
+    color: #0c2340;
+}
+
+.offer-col{
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+.offer-col a {
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+.offer-col img {
+    width: 100%;
+    transition: 0.3s ease;
+}
+.offer-col h3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    opacity: 0;
+    transition: 0.3s ease;
+}
+/* hover effect */
+.offer-col:hover img {
+    filter: blur(5px) brightness(50%);
+}
+.offer-col:hover h3 {
+    opacity: 1;
+}
+.offer-col:hover .layer {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/*------ involvement ------*/
+.involve{
+    width: 80%;
+    margin: auto;
+    text-align: left;
+    padding-top: 75px;
+    min-height: 500px;
+    padding-bottom: 15%;
+}
+.involve h1{
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+    padding-bottom: 5%;
+    padding-top: 5%;
+    color: #0c2340;
+}
+.drop-col{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.drop-col img{
+    width: 50px;
+    height: 50px;
+    align-items: right;
+    transition: transform 0.3s ease;
+}
+.drop-col img.active{
+    transform: rotate(180deg); /* Rotates image when active */
+}
+
+/* hidden content */
+.member-hidden{
+    display: none; /* Initially hidden */
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+}
+.community-hidden{
+    display: none; /* Initially hidden */
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+}
+.benefits-hidden{
+    display: none; /* Initially hidden */
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+}
+
+/*------ footer ------*/
+.footer{
+    background-color: #0c2340;
+    color: white;
+    text-align: center;
+    padding: 30px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding-bottom: 50px;
+    padding-top: 50px;
+}
+.footer-content{
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.footer h3{
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* icons for socials */
+.social-icons{
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+}
+.social-icons a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Set square size */
+    height: 40px;
+    background-color: white; /* White background */
+    color: #0c2340; /* Blue icon color */
+    border-radius: 8px; /* Rounded square effect */
+    text-decoration: none;
+    font-size: 20px;
+    transition: 0.3s ease-in-out;
+    border: 2px solid transparent; /* Initially no border */
+}
+
+.social-icons a:hover{
+    background-color: #0c2340;
+    color: white;
+    border: 2px solid white; /* White border appears */
+}
