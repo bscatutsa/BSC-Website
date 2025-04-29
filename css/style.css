@@ -803,7 +803,119 @@ nav{
     padding-bottom: .75em;
 }
 
+@media (max-width: 768px) {
+    /* Navbar */
+    .nav-bar {
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        padding: 1em 0;
+        height: auto;
+    }
+    .name {
+        margin-top: 2em;
+        text-align: center;
+    }
+    .menu-icon {
+        display: block;
+        position: absolute;
+        top: 1em;
+        right: 1em;
+        font-size: 2.5em;
+        color: white;
+        cursor: pointer;
+        z-index: 200;
+    }
+    .nav-links {
+        display: none;
+        width: 100%;
+        background-color: var(--clr-utsablue);
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1em;
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .nav-links ul {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0;
+    }
+    .nav-links ul li {
+        width: 100%;
+        text-align: center;
+        padding: 0.75em 0;
+    }
+    .nav-links ul li a {
+        display: block;
+        width: 100%;
+        padding: 0.75em 0;
+    }
 
+    /* Stack all rows and reorder on mobile */
+    .row,
+    .row.l,
+    .row.r,
+    .row.reverse {
+        flex-direction: column;
+    }
+
+    .textbox, .pic {
+        height: auto !important;
+        width: 90%;
+        max-width: 90%;
+    }
+
+    .row.l .textbox {
+        order: 1;
+    }
+    .row.l .pic {
+        order: 2;
+    }
+
+    /* Section Titles */
+    .page-header h1,
+    .large {
+        font-size: 2em;
+        text-align: center;
+        margin-top: 2em;
+        padding: 0 1em;
+        word-wrap: break-word;
+    }
+
+    /* Body Layouts */
+    .row, .col, .pic, .textbox, .square, .img, .box, .newsletter, .info, .sponsor {
+        width: 90%;
+        max-width: 90%;
+        padding: 1em;
+        flex-direction: column;
+    }
+
+    /* Footer */
+    footer {
+        flex-direction: column;
+        height: auto;
+        padding: 2em 0;
+        gap: 2em;
+    }
+    .vert-line {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .box-f {
+        text-align: center;
+        padding: 1em;
+    }
+    .social-icons {
+        justify-content: center;
+    }
+}
 
 
 
