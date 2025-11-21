@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!------ important links & webname ------>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point System Demo - Business Student Council</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../scripts/script.js"></script>
+    <script defer src="../scripts/demo.js"></script>
+
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+</head>
+
+<!------ page layout ------>
+<body>
+
+    <header>
+        <!-- nav bar -->
+        <nav class="nav-bar">
+            <div class="nav-logo">
+                <img src="../images/bsc_logo.png" class="logo">
+            </div>
+        
+            <div class="name" onclick="toggleMenu()">
+                <h3>Business Student Council <span class="arrow">▼</span></h3>
+            </div>
+        
+            <div class="nav-links">
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="offer.html">We Offer</a></li>
+                    <li><a href="dev.html">Dev</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+
+        <!-- header title -->
+        <section class="page-header"
+            style="background: linear-gradient(135deg, var(--clr-utsablue) 0%, var(--clr-lightblue) 50%, var(--clr-utsaorange) 100%);
+                   height: 40vh; display:flex; justify-content:center; align-items:center;">
+            <h1 class="hidden" style="color:white; font-size:3.5em; text-align:center;">
+                POINT SYSTEM<br>LIVE DEMO
+            </h1>
+        </section>
+    </header>
+
+    <!-- small demo-specific styles -->
+    <style>
+        .demo-wrapper {
+            width: 85vw;
+            max-width: 1100px;
+            margin: 0 auto 4em auto;
+        }
+
+    /* Activity Summary Box */
+        .activity-summary {
+            margin-top: 1em;
+            padding: .75em 1em;
+            background: #F7F9FB;
+            border-radius: .5em;
+            border: 1px solid #E0E4E8;
+        }
+
+        #kpiSummary {
+            font-size: .9em;
+            line-height: 1.6em;
+            color: var(--clr-darkblue);
+        }
+
+        .activity-dropdown summary {
+            margin-top: .5em;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--clr-lightblue);
+        }
+
+        .activity-dropdown summary:hover {
+            color: var(--clr-utsaorange);
+        }
+
+        .activity-dropdown ul {
+            margin-top: .5em;
+            margin-left: 1em;
+            font-size: .85em;
+            color: var(--clr-bscblue);
+        }
+
+
+        .demo-card {
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 .25em .75em rgba(0, 0, 0, 0.15);
+            border-radius: .75em;
+            padding: 1.75em 2em;
+            margin-bottom: 2em;
+        }
+
+        .demo-card h2 {
+            font-size: 1.5em;
+            color: var(--clr-lightblue);
+            margin-bottom: .5em;
+        }
+
+        .demo-tagline {
+            font-size: .95em;
+            color: var(--clr-bscblue);
+            line-height: 1.6;
+            margin-bottom: 1em;
+        }
+
+        .demo-form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5em;
+            margin: 1em 0;
+        }
+
+        .demo-form-row input[type="text"] {
+            flex: 1;
+            min-width: 10em;
+            padding: .6em .75em;
+            border-radius: .35em;
+            border: .1em solid var(--clr-bscblue);
+            font-size: .9em;
+        }
+
+        .demo-label {
+            font-size: .85em;
+            font-weight: 600;
+            color: var(--clr-bscblue);
+            margin-top: .35em;
+        }
+
+        .demo-value {
+            font-size: .95em;
+            margin-bottom: .35em;
+        }
+
+        .demo-value.points {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--clr-utsaorange);
+        }
+
+        .demo-status-pill {
+            display: inline-block;
+            padding: .25em .75em;
+            border-radius: 999px;
+            font-size: .8em;
+            font-weight: 600;
+            background-color: var(--clr-bscgray);
+            color: var(--clr-darkblue);
+        }
+
+        .demo-status-pill.active {
+            background-color: #d1f2d4;
+            color: #1d7a33;
+        }
+
+        .demo-status-pill.probation {
+            background-color: #ffe0e0;
+            color: #b3261e;
+        }
+
+        .demo-buttons-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5em;
+            margin-top: .75em;
+        }
+
+        .demo-small-btn {
+            padding: .45em 1em;
+            border-radius: 999px;
+            border: .1em solid var(--clr-lightblue);
+            background-color: var(--clr-lightblue);
+            color: white;
+            font-size: .8em;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .demo-small-btn.secondary {
+            background-color: white;
+            color: var(--clr-lightblue);
+        }
+
+        .demo-small-btn:hover {
+            transform: translateY(0.05em);
+            opacity: 0.9;
+        }
+
+        .demo-message {
+            font-size: .85em;
+            margin-top: .35em;
+        }
+
+        .demo-message.ok {
+            color: #1d7a33;
+        }
+
+        .demo-message.error {
+            color: #b3261e;
+        }
+
+        .demo-admin-toggle {
+            font-size: .9em;
+            color: var(--clr-bscblue);
+            margin-bottom: .5em;
+            display: flex;
+            align-items: center;
+            gap: .4em;
+        }
+
+        .demo-log-list {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: .75em;
+            padding-left: 1.1em;
+            font-size: .9em;
+        }
+        .chart-toggle {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1em;
+        }
+
+        .chart-toggle-track {
+            position: relative;
+            background-color: var(--clr-bscgray);
+            border-radius: 999px;
+            width: 220px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 .5em;
+            cursor: pointer;
+        }
+
+        .chart-toggle-knob {
+            position: absolute;
+            width: 110px;
+            height: 32px;
+            background-color: white;
+            border-radius: 999px;
+            top: 3px;
+            left: 3px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: all 0.25s ease-in-out;
+        }
+
+        .chart-toggle-option {
+            flex: 1;
+            text-align: center;
+            color: var(--clr-darkblue);
+            font-size: .9em;
+            font-weight: 600;
+            z-index: 2;
+            user-select: none;
+        }
+
+        .chart-toggle-option.active {
+            color: var(--clr-lightblue);
+        }
+
+
+        .demo-log-list li {
+            margin-bottom: .25em;
+        }
+        .chart-container {
+             width: 400px;
+             max-width: 90%;
+             margin: 1em auto;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+        
+        @media (max-width: 700px) {
+            .demo-card {
+                padding: 1.5em 1.25em;
+            }
+        }
+    </style>
+
+    <!-- MAIN DEMO CONTENT -->
+    <section class="col top-space">
+        <div class="demo-wrapper">
+
+            <!-- intro -->
+            <div class="sub-section sub hidden" style="padding-left:0; width:100%;">
+                <h2>Member Portal Demo</h2>
+                <p class="demo-tagline">
+                    Use your <b>myUTSA ID</b> from the roster to see your current points, status, and events.
+                    During a meeting, this page can also be used for live check-ins and point adjustments.
+                </p>
+            </div>
+
+            <!-- lookup + member card -->
+            <div class="demo-card hidden">
+                <h2>Member Lookup</h2>
+                <p class="demo-tagline">
+                    Enter a myUTSA ID exactly as it appears on the <b>New &amp; Returning Members Roster</b>
+                    (for example: <i>abc123</i>).
+                </p>
+
+                <div class="demo-form-row">
+                    <input type="text" id="utsaIdInput" placeholder="Enter myUTSA ID (ex: abc123)">
+                    <button id="lookupBtn" class="rect-btn">Lookup</button>
+                </div>
+
+                <div id="lookupMessage" class="demo-message"></div>
+
+                <hr class="sub-hr" style="margin: 1.25em 0;">
+
+                <div id="memberCard" style="display:none;">
+
+                    <!-- BIG OUTER WRAPPER -->
+                    <div class="member-wrapper">
+                
+                        <!-- LEFT: PROFILE BOX -->
+                        <div class="member-box left-box">
+                            <div class="demo-label">Name</div>
+                            <div class="demo-value" id="memberName">—</div>
+                            
+                            <div class="demo-label">Membership Type</div>
+                            <div id="membershipTierBadge"></div>
+                
+                            <div class="demo-label">Status</div>
+                            <div class="demo-value">
+                                <span id="memberStatus" class="demo-status-pill">—</span>
+                            </div>
+                            <div>   </div>
+                
+                            <div class="demo-label">Total Points</div>
+                            <div class="demo-value points" id="memberPoints">0</div>
+                        </div>
+                
+                
+                        <!-- RIGHT: CHARTS BOX -->
+                        <div class="member-box right-box">
+                            <div id="categoryBadges"></div>
+
+                            <div class="demo-label">Point Breakdown</div>
+                
+                            <div class="chart-toggle">
+                                <div class="chart-toggle-track" id="chartToggleTrack">
+                                    <div class="chart-toggle-knob" id="chartToggleKnob"></div>
+                                    <span class="chart-toggle-option" data-mode="donut">Donut</span>
+                                    <span class="chart-toggle-option" data-mode="bar">Bar</span>
+                                </div>
+                            </div>
+                
+                            <div class="chart-container">
+                                <canvas id="pointsChart"></canvas>
+                            </div>
+                        </div>
+                
+                    </div>
+                
+                    <!-- EVENTS BOX -->
+                    <div class="events-box">
+                        <div class="demo-label">Events Attended</div>
+                
+                        <div id="eventFilters" class="event-filter-row"></div>
+                
+                        <div id="eventList" class="event-list">Section Coming Soon!</div>
+                    </div>
+                
+                    <div class="demo-buttons-row" style="margin-top:1em;">
+                        <button id="checkInBtn" class="demo-small-btn">Check In</button>
+                    </div>
+                
+                    <div id="checkInMessage" class="demo-message"></div>
+                
+                </div>
+                
+                
+            </div>
+
+            <!-- admin mode -->
+        
+
+            <!-- attendance log -->
+            
+
+        </div>
+    </section>
+
+    <!-- footer section -->
+    <footer class="footer">
+
+        <!-- sponsor -->
+        <div class="box-f">
+            <h2>Become a Sponsor!</h2>
+            <p>
+                If you are interested in supporting BSC, <br>
+                please contact us! We are always welcoming <br>
+                of new sponsors!
+            </p>
+            <a href="../pages/contact.html" class="btn-f">Contact Us</a>
+        </div>
+
+        <div class="vert-line"></div>
+
+        <!-- get involved / mailing list -->
+        <div class="box-f">
+            <h2>Get Involved!</h2>
+            <p>
+                Join our biweekly newsletter and get updates <br>
+                over BSC's involvement and events!
+            </p>
+            <a href="../pages/contact.html" class="btn-f">Mailing List</a>
+        </div>
+
+        <div class="vert-line"></div>
+
+        <!-- contact -->
+        <div class="box-f">
+            <h2>Contact Information</h2>
+            <p><a href="mailto:bscatutsa@gmail.com" target="_self" class="hyperlink f">E-Mail: bscatutsa@gmail.com</a></p>
+            <p><a href="https://utsa.campuslabs.com/engage/organ...s="hyperlink f">RowdyLink: utsa.campuslabs.com/utsa-bsc</a></p>
+            <p><a href="https://linktr.ee/bscutsa" target="_self" class="hyperlink f">Linktree: linktr.ee/bscutsa</a></p>
+
+            <div class="social-icons">
+                <a href="https://www.instagram.com/utsabsc" target="_self"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/busine...-council" target="_self"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+        </div>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+<!-- FontAwesome for Icons -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</html>
