@@ -1,0 +1,1009 @@
+// =====================================================
+//  BSC - LIVE MEMBER LOOKUP & CHECK-IN DEMO
+// =====================================================
+
+// ---- LIVE CSV EXPORT FROM GOOGLE SHEETS ----
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpK_hr-oa_6Timk4lHs40Nhe0ukT5eU3jWKutavE0uumf73LgIuIbchhPjSscfvdvZZka4_QyTpgQN/pub?gid=1455140197&single=true&output=csv";
+
+let memberDB = {};
+let currentMember = null;
+const attendanceSet = new Set();
+let pointsChart = null;
+
+// NEW — chart mode state
+let chartMode = "donut";
+//membership tier
+  function getMembershipTier(points) {
+    if (points >= 36) return { tier: "Executive", class: "tier-executive" };
+    if (points >= 21) return { tier: "Professional", class: "tier-professional" };
+    if (points >= 11) return { tier: "Intern", class: "tier-intern" };
+    return { tier: "Member", class: "tier-member" };
+  }
+
+// --------------------------------------------------
+// DONUT CHART RENDER
+// --------------------------------------------------
+function renderChart(member) {
+  const ctx = document.getElementById("pointsChart").getContext("2d");
+
+  const cats = member.categories;
+
+  const labels = [];
+  const data = [];
+  const colors = [];
+
+  const colorMap = {
+    socials: "#5DA8FF",
+    meetings: "#1D5DFF",
+    reposts: "#7BC8FF",
+    fundraiser: "#FF914D",
+    volunteering: "#FFCE56",
+    workshops: "#FFC0CB",
+    events: "#9B59B6",
+    extra: "#2ECC71",
+    committee: "#34495E"
+  };
+
+  for (const key in cats) {
+    const val = cats[key];
+    if (val > 0) {
+      labels.push(key.charAt(0).toUpperCase() + key.slice(1));
+      data.push(val);
+      colors.push(colorMap[key]);
+    }
+  }
+
+  if (pointsChart) pointsChart.destroy();
+
+  pointsChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: colors,
+          hoverOffset: 12
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        animateRotate: true,
+        animateScale: true,
+        duration: 900
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const val = context.raw;
+              const total = data.reduce((a, b) => a + b, 0);
+              const pct = ((val / total) * 100).toFixed(1);
+              return `${context.label}: ${val} (${pct}%)`;
+            }
+          }
+        },
+        legend: {
+          position: "bottom",
+          labels: { boxWidth: 15 }
+        }
+      }
+    }
+  });
+
+  // Summary Text
+  const sorted = Object.entries(cats)
+    .filter(([k, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  let summaryText = "";
+
+  if (sorted.length === 0) {
+    summaryText = "No points earned yet.";
+  } else {
+    const [topCat, topVal] = sorted[0];
+    summaryText += `Most points from ${topCat} (${topVal}). `;
+
+    if (sorted[1]) {
+      const [secCat, secVal] = sorted[1];
+      summaryText += `Second highest from ${secCat} (${secVal}). `;
+    }
+
+    const zeroCats = Object.entries(cats)
+      .filter(([k, v]) => v === 0)
+      .map(([k]) => k);
+
+    if (zeroCats.length > 0) {
+      summaryText += `No points in: ${zeroCats.join(", ")}.`;
+    }
+  }
+
+}
+
+// --------------------------------------------------
+// BAR CHART RENDER
+// --------------------------------------------------
+function renderBarChart(member) {
+  const ctx = document.getElementById("pointsChart").getContext("2d");
+
+  const cats = member.categories;
+  const labels = [];
+  const data = [];
+
+  for (const key in cats) {
+    if (cats[key] > 0) {
+      labels.push(key.charAt(0).toUpperCase() + key.slice(1));
+      data.push(cats[key]);
+    }
+  }
+
+  if (pointsChart) pointsChart.destroy();
+
+  pointsChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: labels.map(label => {
+            const key = label.toLowerCase();
+            return {
+              socials:      "#5DA8FF",
+              meetings:     "#1D5DFF",
+              reposts:      "#7BC8FF",
+              fundraiser:   "#FF914D",
+              volunteering: "#FFCE56",
+              workshops:    "#FFC0CB",
+              events:       "#9B59B6",
+              extra:        "#2ECC71",
+              committee:    "#34495E"
+            }[key] || "#1A4B89";   // fallback
+          }),
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      indexAxis: "y",
+      scales: {
+        x: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { display: false }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
+
+
+// --------------------------------------------------
+// CHART MODE HANDLER
+// --------------------------------------------------
+function renderChartByMode(member) {
+  if (chartMode === "donut") {
+    renderChart(member);
+  } else {
+    renderBarChart(member);
+  }
+}
+
+// --------------------------------------------------
+// LOAD + PARSE SHEET
+// --------------------------------------------------
+async function loadMembersFromSheet() {
+  try {
+    const res = await fetch(SHEET_URL);
+    const csv = await res.text();
+
+    const rows = csv.split(/\r?\n/).map(r => r.split(","));
+    const header = rows[0].map(h => h.trim());
+
+    let db = {};
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row[0] || !row[2]) continue;
+
+      const first = row[0].trim();
+      const last = row[1].trim();
+      const id = row[2].trim().toLowerCase();
+      const total = parseInt(row[3] || 0);
+
+      const socials = parseInt(row[4] || 0);
+      const meetings = parseInt(row[5] || 0);
+      const reposts = parseInt(row[6] || 0);
+      const fundraiser = parseInt(row[7] || 0);
+      const volunteering = parseInt(row[8] || 0);
+      const workshops = parseInt(row[9] || 0);
+      const events = parseInt(row[10] || 0);
+      const extra = parseInt(row[11] || 0);
+      const committee = parseInt(row[12] || 0);
+
+      db[id] = {
+        utsaId: id,
+        name: `${first} ${last}`,
+        first,
+        last,
+        points: total,
+        originalPoints: total,
+        categories: {
+          socials,
+          meetings,
+          reposts,
+          fundraiser,
+          volunteering,
+          workshops,
+          events,
+          extra,
+          committee
+        },
+        status: "Active",
+        eventsList: []
+      };
+    }
+
+    memberDB = db;
+  } catch (err) {
+    console.error("CSV PARSE FAILED:", err);
+  }
+}
+
+// --------------------------------------------------
+// HELPER FUNCTIONS
+// --------------------------------------------------
+function setStatusPill(statusText) {
+  const pill = document.getElementById("memberStatus");
+  pill.textContent = statusText || "—";
+  pill.classList.remove("active", "probation");
+
+  const s = (statusText || "").toLowerCase();
+  if (s.includes("active")) pill.classList.add("active");
+  if (s.includes("probation")) pill.classList.add("probation");
+}
+
+function showMessage(id, text, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.classList.remove("ok", "error");
+  if (type === "ok") el.classList.add("ok");
+  if (type === "error") el.classList.add("error");
+}
+
+function animatePoints(from, to) {
+  const el = document.getElementById("memberPoints");
+  const duration = 500;
+  const start = performance.now();
+
+  function step(ts) {
+    const progress = Math.min((ts - start) / duration, 1);
+    el.textContent = Math.round(from + (to - from) * progress);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderEvents(member) {
+  const eventList = document.getElementById("eventList");
+  const filterRow = document.getElementById("eventFilters");
+
+  // Safety check
+  if (!eventList || !filterRow) return;
+
+  eventList.innerHTML = "";
+  filterRow.innerHTML = "";
+
+  const events = member.events || [];
+
+  // No events?
+  if (events.length === 0) {
+      eventList.textContent = "No events recorded.";
+      return;
+  }
+
+  // Generate list
+  events.forEach(ev => {
+      const row = document.createElement("div");
+      row.textContent = ev;
+      row.style.marginBottom = "4px";
+      eventList.appendChild(row);
+  });
+
+  // Simple ALL filter so the UI doesn't break
+  const allPill = document.createElement("div");
+  allPill.className = "event-filter-pill active";
+  allPill.textContent = "All";
+  filterRow.appendChild(allPill);
+}
+
+
+function renderCategoryBadges(member) {
+  const container = document.getElementById("categoryBadges");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  // These MUST match the chart dataset order + colors
+  const categories = [
+      { key: "socials", label: "Socials", color: "#4F8AFF" },
+      { key: "meetings", label: "Meetings", color: "#7C4DFF" },
+      { key: "workshops", label: "Workshops", color: "#FFB2C4" },
+      { key: "events", label: "Events", color: "#54C1A9" },
+      { key: "extra", label: "Extra", color: "#7BD13A" }
+  ];
+
+  categories.forEach(cat => {
+      const points = member.pointsByCategory?.[cat.key] || 0;
+
+      // Show only categories that actually have points
+      if (points > 0) {
+          const badge = document.createElement("span");
+          badge.className = "category-badge";
+          badge.textContent = `${cat.label}: ${points}`;
+          badge.style.backgroundColor = cat.color;
+          container.appendChild(badge);
+      }
+  });
+}
+
+// --------------------------------------------------
+// RENDER MEMBER CARD
+// --------------------------------------------------
+function renderMember(member) {
+  const card = document.getElementById("memberCard");
+
+  // 1) If no member loaded → hide card
+  if (!member) {
+    card.style.display = "none";
+    return;
+  }
+
+  // Show card
+  card.style.display = "block";
+
+  // 2) BASIC INFO
+  document.getElementById("memberName").textContent = member.name;
+  document.getElementById("memberPoints").textContent = member.points;
+  setStatusPill(member.status || "");
+
+  // 3) MEMBERSHIP TIER BADGE
+  const tierInfo = getMembershipTier(member.points);
+  const badge = document.getElementById("membershipTierBadge");
+  badge.textContent = tierInfo.tier;
+  badge.className = tierInfo.class;
+
+  // 4) RENDER CHART (Donut or Bar)
+  renderChartByMode(member);
+
+  // 5) RENDER CATEGORY BADGES (under chart)
+  renderCategoryBadges(member);
+
+  // 6) RENDER EVENTS LIST + CATEGORY FILTER BUTTONS
+  renderEvents(member);
+}
+
+
+
+// --------------------------------------------------
+// DOM LOGIC
+// --------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const utsaInput = document.getElementById("utsaIdInput");
+  const lookupBtn = document.getElementById("lookupBtn");
+  const checkInBtn = document.getElementById("checkInBtn");
+  const adminToggle = document.getElementById("adminToggle");
+  const adminControls = document.getElementById("adminControls");
+  const attendanceList = document.getElementById("attendanceList");
+  const attendanceEmpty = document.getElementById("attendanceEmpty");
+  const resetPointsBtn = document.getElementById("resetPointsBtn");
+
+  loadMembersFromSheet();
+
+  // CHART TOGGLE
+  const toggleTrack = document.getElementById("chartToggleTrack");
+  const toggleKnob = document.getElementById("chartToggleKnob");
+  const toggleOptions = document.querySelectorAll(".chart-toggle-option");
+
+  toggleOptions.forEach(opt => {
+    opt.addEventListener("click", () => {
+      chartMode = opt.dataset.mode;
+
+      // move knob
+      if (chartMode === "donut") {
+        toggleKnob.style.left = "3px";
+      } else {
+        toggleKnob.style.left = "107px";
+      }
+
+      toggleOptions.forEach(o => o.classList.remove("active"));
+      opt.classList.add("active");
+
+      if (currentMember) {
+        renderChartByMode(currentMember);
+      }
+    });
+  });
+
+  // LOOKUP
+  function doLookup() {
+    const id = (utsaInput.value || "").trim().toLowerCase();
+
+    if (!id) {
+      showMessage("lookupMessage", "Enter a myUTSA ID.", "error");
+      renderMember(null);
+      currentMember = null;
+      return;
+    }
+
+    if (!memberDB[id]) {
+      showMessage("lookupMessage", `No member found for "${id}".`, "error");
+      renderMember(null);
+      currentMember = null;
+      return;
+    }
+
+    currentMember = { ...memberDB[id] };
+    showMessage("lookupMessage", `Loaded ${currentMember.name}.`, "ok");
+    showMessage("checkInMessage", "", "ok");
+    renderMember(currentMember);
+  }
+
+  lookupBtn.addEventListener("click", doLookup);
+  utsaInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") doLookup();
+  });
+
+  document.querySelectorAll(".hidden").forEach(el => {
+    el.classList.remove("hidden");
+  });
+
+  // CHECK-IN
+  checkInBtn.addEventListener("click", () => {
+    if (!currentMember) {
+      showMessage("checkInMessage", "Lookup a member first.", "error");
+      return;
+    }
+
+    if (attendanceSet.has(currentMember.utsaId)) {
+      showMessage("checkInMessage", "Already checked in.", "error");
+      return;
+    }
+
+    attendanceSet.add(currentMember.utsaId);
+    showMessage("checkInMessage", "Check-in recorded.", "ok");
+
+    if (attendanceEmpty) attendanceEmpty.remove();
+
+    const li = document.createElement("li");
+    li.textContent = `${currentMember.name} (${currentMember.utsaId})`;
+    attendanceList.prepend(li);
+  });
+
+  // ADMIN MODE
+  adminToggle.addEventListener("change", () => {
+    adminControls.style.display = adminToggle.checked ? "block" : "none";
+  });
+
+  adminControls.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn || !currentMember) return;
+
+    if (btn === resetPointsBtn) {
+      animatePoints(currentMember.points, currentMember.originalPoints);
+      currentMember.points = currentMember.originalPoints;
+      return;
+    }
+
+    const delta = parseInt(btn.getAttribute("data-delta")) || 0;
+    const newVal = currentMember.points + delta;
+    animatePoints(currentMember.points, newVal);
+    currentMember.points = newVal;
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================================================================================================================================
+
+
+OLD HTML DEMO
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<!------ important links & webname ------>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point System Demo - Business Student Council</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../scripts/script.js"></script>
+    <script defer src="../scripts/demo.js"></script>
+
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+</head>
+
+<!------ page layout ------>
+<body>
+
+    <header>
+        <!-- nav bar -->
+        <nav class="nav-bar">
+            <div class="nav-logo">
+                <img src="../images/bsc_logo.png" class="logo">
+            </div>
+        
+            <div class="name" onclick="toggleMenu()">
+                <h3>Business Student Council <span class="arrow">▼</span></h3>
+            </div>
+        
+            <div class="nav-links">
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="offer.html">We Offer</a></li>
+                    <li><a href="dev.html">Dev</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+
+        <!-- header title -->
+        <section class="page-header"
+            style="background: linear-gradient(135deg, var(--clr-utsablue) 0%, var(--clr-lightblue) 50%, var(--clr-utsaorange) 100%);
+                   height: 40vh; display:flex; justify-content:center; align-items:center;">
+            <h1 class="hidden" style="color:white; font-size:3.5em; text-align:center;">
+                POINT SYSTEM<br>LIVE DEMO
+            </h1>
+        </section>
+    </header>
+
+    <!-- small demo-specific styles -->
+    <style>
+        .demo-wrapper {
+            width: 85vw;
+            max-width: 1100px;
+            margin: 0 auto 4em auto;
+        }
+
+    /* Activity Summary Box */
+        .activity-summary {
+            margin-top: 1em;
+            padding: .75em 1em;
+            background: #F7F9FB;
+            border-radius: .5em;
+            border: 1px solid #E0E4E8;
+        }
+
+        #kpiSummary {
+            font-size: .9em;
+            line-height: 1.6em;
+            color: var(--clr-darkblue);
+        }
+
+        .activity-dropdown summary {
+            margin-top: .5em;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--clr-lightblue);
+        }
+
+        .activity-dropdown summary:hover {
+            color: var(--clr-utsaorange);
+        }
+
+        .activity-dropdown ul {
+            margin-top: .5em;
+            margin-left: 1em;
+            font-size: .85em;
+            color: var(--clr-bscblue);
+        }
+
+
+        .demo-card {
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 .25em .75em rgba(0, 0, 0, 0.15);
+            border-radius: .75em;
+            padding: 1.75em 2em;
+            margin-bottom: 2em;
+        }
+
+        .demo-card h2 {
+            font-size: 1.5em;
+            color: var(--clr-lightblue);
+            margin-bottom: .5em;
+        }
+
+        .demo-tagline {
+            font-size: .95em;
+            color: var(--clr-bscblue);
+            line-height: 1.6;
+            margin-bottom: 1em;
+        }
+
+        .demo-form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5em;
+            margin: 1em 0;
+        }
+
+        .demo-form-row input[type="text"] {
+            flex: 1;
+            min-width: 10em;
+            padding: .6em .75em;
+            border-radius: .35em;
+            border: .1em solid var(--clr-bscblue);
+            font-size: .9em;
+        }
+
+        .demo-label {
+            font-size: .85em;
+            font-weight: 600;
+            color: var(--clr-bscblue);
+            margin-top: .35em;
+        }
+
+        .demo-value {
+            font-size: .95em;
+            margin-bottom: .35em;
+        }
+
+        .demo-value.points {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--clr-utsaorange);
+        }
+
+        .demo-status-pill {
+            display: inline-block;
+            padding: .25em .75em;
+            border-radius: 999px;
+            font-size: .8em;
+            font-weight: 600;
+            background-color: var(--clr-bscgray);
+            color: var(--clr-darkblue);
+        }
+
+        .demo-status-pill.active {
+            background-color: #d1f2d4;
+            color: #1d7a33;
+        }
+
+        .demo-status-pill.probation {
+            background-color: #ffe0e0;
+            color: #b3261e;
+        }
+
+        .demo-buttons-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5em;
+            margin-top: .75em;
+        }
+
+        .demo-small-btn {
+            padding: .45em 1em;
+            border-radius: 999px;
+            border: .1em solid var(--clr-lightblue);
+            background-color: var(--clr-lightblue);
+            color: white;
+            font-size: .8em;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .demo-small-btn.secondary {
+            background-color: white;
+            color: var(--clr-lightblue);
+        }
+
+        .demo-small-btn:hover {
+            transform: translateY(0.05em);
+            opacity: 0.9;
+        }
+
+        .demo-message {
+            font-size: .85em;
+            margin-top: .35em;
+        }
+
+        .demo-message.ok {
+            color: #1d7a33;
+        }
+
+        .demo-message.error {
+            color: #b3261e;
+        }
+
+        .demo-admin-toggle {
+            font-size: .9em;
+            color: var(--clr-bscblue);
+            margin-bottom: .5em;
+            display: flex;
+            align-items: center;
+            gap: .4em;
+        }
+
+        .demo-log-list {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: .75em;
+            padding-left: 1.1em;
+            font-size: .9em;
+        }
+        .chart-toggle {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1em;
+        }
+
+        .chart-toggle-track {
+            position: relative;
+            background-color: var(--clr-bscgray);
+            border-radius: 999px;
+            width: 220px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 .5em;
+            cursor: pointer;
+        }
+
+        .chart-toggle-knob {
+            position: absolute;
+            width: 110px;
+            height: 32px;
+            background-color: white;
+            border-radius: 999px;
+            top: 3px;
+            left: 3px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: all 0.25s ease-in-out;
+        }
+
+        .chart-toggle-option {
+            flex: 1;
+            text-align: center;
+            color: var(--clr-darkblue);
+            font-size: .9em;
+            font-weight: 600;
+            z-index: 2;
+            user-select: none;
+        }
+
+        .chart-toggle-option.active {
+            color: var(--clr-lightblue);
+        }
+
+
+        .demo-log-list li {
+            margin-bottom: .25em;
+        }
+        .chart-container {
+             width: 400px;
+             max-width: 90%;
+             margin: 1em auto;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+        
+        @media (max-width: 700px) {
+            .demo-card {
+                padding: 1.5em 1.25em;
+            }
+        }
+    </style>
+
+    <!-- MAIN DEMO CONTENT -->
+    <section class="col top-space">
+        <div class="demo-wrapper">
+
+            <!-- intro -->
+            <div class="sub-section sub hidden" style="padding-left:0; width:100%;">
+                <h2>Member Portal Demo</h2>
+                <p class="demo-tagline">
+                    Use your <b>myUTSA ID</b> from the roster to see your current points, status, and events.
+                    During a meeting, this page can also be used for live check-ins and point adjustments.
+                </p>
+            </div>
+
+            <!-- lookup + member card -->
+            <div class="demo-card hidden">
+                <h2>Member Lookup</h2>
+                <p class="demo-tagline">
+                    Enter a myUTSA ID exactly as it appears on the <b>New &amp; Returning Members Roster</b>
+                    (for example: <i>abc123</i>).
+                </p>
+
+                <div class="demo-form-row">
+                    <input type="text" id="utsaIdInput" placeholder="Enter myUTSA ID (ex: xre858)">
+                    <button id="lookupBtn" class="rect-btn">Lookup</button>
+                </div>
+
+                <div id="lookupMessage" class="demo-message"></div>
+
+                <hr class="sub-hr" style="margin: 1.25em 0;">
+
+                <div id="memberCard" style="display:none;">
+
+                    <!-- BIG OUTER WRAPPER -->
+                    <div class="member-wrapper">
+                
+                        <!-- LEFT: PROFILE BOX -->
+                        <div class="member-box left-box">
+                            <div class="demo-label">Name</div>
+                            <div class="demo-value" id="memberName">—</div>
+                            
+                            <div class="demo-label">Membership Type</div>
+                            <div id="membershipTierBadge"></div>
+                
+                            <div class="demo-label">Status</div>
+                            <div class="demo-value">
+                                <span id="memberStatus" class="demo-status-pill">—</span>
+                            </div>
+                            <div>   </div>
+                
+                            <div class="demo-label">Total Points</div>
+                            <div class="demo-value points" id="memberPoints">0</div>
+                        </div>
+                
+                
+                        <!-- RIGHT: CHARTS BOX -->
+                        <div class="member-box right-box">
+                            <div id="categoryBadges"></div>
+
+                            <div class="demo-label">Point Breakdown</div>
+                
+                            <div class="chart-toggle">
+                                <div class="chart-toggle-track" id="chartToggleTrack">
+                                    <div class="chart-toggle-knob" id="chartToggleKnob"></div>
+                                    <span class="chart-toggle-option" data-mode="donut">Donut</span>
+                                    <span class="chart-toggle-option" data-mode="bar">Bar</span>
+                                </div>
+                            </div>
+                
+                            <div class="chart-container">
+                                <canvas id="pointsChart"></canvas>
+                            </div>
+                        </div>
+                
+                    </div>
+                
+                    <!-- EVENTS BOX -->
+                    <div class="events-box">
+                        <div class="demo-label">Events Attended</div>
+                
+                        <div id="eventFilters" class="event-filter-row"></div>
+                
+                        <div id="eventList" class="event-list">No events recorded.</div>
+                    </div>
+                
+                    <div class="demo-buttons-row" style="margin-top:1em;">
+                        <button id="checkInBtn" class="demo-small-btn">Check In</button>
+                    </div>
+                
+                    <div id="checkInMessage" class="demo-message"></div>
+                
+                </div>
+                
+                
+            </div>
+
+            <!-- admin mode -->
+            <div class="demo-card hidden">
+                <h2>Admin Mode</h2>
+                <p class="demo-tagline">
+                    During a presentation, Admin Mode lets you adjust a member's points live on screen.
+                    This only affects the demo and does not write back to the sheet.
+                </p>
+
+                <div class="demo-admin-toggle">
+                    <input type="checkbox" id="adminToggle">
+                    <label for="adminToggle">Enable Admin Mode (Presenter only)</label>
+                </div>
+
+                <div id="adminControls" style="display:none;">
+                    <div class="demo-label">Adjust points for the currently loaded member:</div>
+                    <div class="demo-buttons-row">
+                        <button class="demo-small-btn" data-delta="1">+1 Point</button>
+                        <button class="demo-small-btn" data-delta="3">+3 Points</button>
+                        <button class="demo-small-btn" data-delta="5">+5 Points</button>
+                        <button class="demo-small-btn secondary" id="resetPointsBtn">Reset to Original</button>
+                    </div>
+                    <p class="demo-message" style="margin-top:.6em;">
+                        Tip: load your own myUTSA ID, turn Admin Mode on, and bump your points live in front of the room.
+                    </p>
+                </div>
+            </div>
+
+            <!-- attendance log -->
+            <div class="demo-card hidden">
+                <h2>Attendance Log (This Session)</h2>
+                <p class="demo-tagline">
+                    Whenever someone checks in, they appear in this list. On a projector, this can be
+                    used as a visual confirmation that members were successfully logged for the meeting.
+                </p>
+
+                <ul id="attendanceList" class="demo-log-list">
+                    <li id="attendanceEmpty">No check-ins yet.</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- footer section -->
+    <footer class="footer">
+
+        <!-- sponsor -->
+        <div class="box-f">
+            <h2>Become a Sponsor!</h2>
+            <p>
+                If you are interested in supporting BSC, <br>
+                please contact us! We are always welcoming <br>
+                of new sponsors!
+            </p>
+            <a href="../pages/contact.html" class="btn-f">Contact Us</a>
+        </div>
+
+        <div class="vert-line"></div>
+
+        <!-- get involved / mailing list -->
+        <div class="box-f">
+            <h2>Get Involved!</h2>
+            <p>
+                Join our biweekly newsletter and get updates <br>
+                over BSC's involvement and events!
+            </p>
+            <a href="../pages/contact.html" class="btn-f">Mailing List</a>
+        </div>
+
+        <div class="vert-line"></div>
+
+        <!-- contact -->
+        <div class="box-f">
+            <h2>Contact Information</h2>
+            <p><a href="mailto:bscatutsa@gmail.com" target="_self" class="hyperlink f">E-Mail: bscatutsa@gmail.com</a></p>
+            <p><a href="https://utsa.campuslabs.com/engage/organ...s="hyperlink f">RowdyLink: utsa.campuslabs.com/utsa-bsc</a></p>
+            <p><a href="https://linktr.ee/bscutsa" target="_self" class="hyperlink f">Linktree: linktr.ee/bscutsa</a></p>
+
+            <div class="social-icons">
+                <a href="https://www.instagram.com/utsabsc" target="_self"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/busine...-council" target="_self"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+        </div>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+<!-- FontAwesome for Icons -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</html>
