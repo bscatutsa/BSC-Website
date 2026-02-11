@@ -279,7 +279,7 @@ nav{
 .home{
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    min-height: 75vh;
 
     background-image: linear-gradient(rgba(4,9,30,0.7),rgba(4,9,30,0.7)),url(../images/main1.jpg);
     background-position: right center;
@@ -287,7 +287,7 @@ nav{
 }
 
 .large{
-    font-size: 4em;
+    font-size: 3em;
 
     padding-top: .75em;
     padding-bottom: .75em;
@@ -299,25 +299,25 @@ nav{
 }
 
 /* page header */
-.page-header{
+.page-header {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-
-    display: flex;
-    height: 75vh;
     overflow: hidden;
-    width: 100%;
 }
-.page-header h1{
+
+.page-header h1 {
     font-size: 5em;
     text-align: center;
-    padding-top: 3.2em;
     color: white;
     z-index: 1;
+    position: relative;
 }
 
-.page-header img{
+.page-header img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -326,7 +326,8 @@ nav{
     left: 0;
     z-index: -1;
 }
-.page-header::before{
+
+.page-header::before {
     content: "";
     position: absolute;
     top: 0;
@@ -341,11 +342,14 @@ nav{
 .row{
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    /* CRITICAL FIX — stop vertical centering */
+    align-items: flex-start;
 
     padding: 3em;
-    gap: 1.5em;    
+    gap: 1.5em;
 }
+
 .row.l{
     justify-content: flex-start;
 }
@@ -360,10 +364,7 @@ nav{
     padding: .25em;
 }
 
-.col {
-    padding: 0;
-    gap: 1em;
-}
+
 
 .col.w{
     padding-top: 1em;
@@ -409,7 +410,6 @@ nav{
 .textbox{
     text-align: center;
 
-    height: 17.5em;
     width: 28em;
 
     padding: 5%;
@@ -493,30 +493,22 @@ nav{
 }
 
 /* picture */
-.pic{
-    height: 20em;
-    width: 30em;
-
-    position: relative;
-    overflow: hidden;
-
-    border-radius: .5em;
-}
-.pic img{
+.pic img,
+.img img {
     width: 100%;
-    height: 100%;
+    height: auto;
+    max-height: 20em;
     object-fit: cover;
-
-    transition: transform 0.3s ease-in-out;
+    display: block;
 }
+
 
 .img{
-    height: 20em;
     width: 30em;
-
     position: relative;
     overflow: hidden;
 }
+
 .img h3 {
     position: absolute;
     top: 50%;
@@ -528,7 +520,6 @@ nav{
 }
 .img img{
     width: 100%;
-    height: 100%;
     object-fit: cover;
 }
 .img:hover{
@@ -755,11 +746,7 @@ nav{
     gap: .5em;
     padding-bottom: .75em;
 }
-.name {
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
-}
+
 
 .name h3 {
     display: flex;
@@ -842,20 +829,16 @@ nav{
 
 
     /* ---- PAGE HEADER HERO TEXT ---- */
-    .page-header h1 {
-        font-size: 1.35em !important;
-        line-height: 1.2em !important;
-        padding: 0 1em !important;
-        margin-top: 2.5em !important;
-        text-align: center !important;
+    .page-header {
+        height: 35vh;
     }
 
-    /* ---- FIX HUGE MOBILE HERO IMAGE ---- */
-.page-header {
-    height: 28vh !important;   /* adjust between 25–35vh to your liking */
-    background-size: cover !important;
-    background-position: center !important;
-}
+    .page-header h1 {
+        font-size: 1.35em;
+        line-height: 1.2em;
+        padding: 0 1em;
+        text-align: center;
+    }
 
 
 
@@ -903,17 +886,16 @@ nav{
 
     /* ---- FOOTER ---- */
     footer {
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 2.5em 1em !important;
-        gap: 2.5em !important;
-        height: auto !important;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2.5em 1em;
+        gap: 2.5em;
     }
 
     .box-f {
-        text-align: center !important;
-        padding: 0.5em !important;
+        text-align: center;
+        padding: 0.5em;
     }
 
     .vert-line {
@@ -927,39 +909,49 @@ nav{
 
 
 /*------ footer ------*/
-footer{
+footer {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-
     background-color: var(--clr-utsablue);
-    height: 35vh;
+    padding: 3em 2em;
+    gap: 2em;
+    flex-wrap: wrap;
 }
 
-.box-f{
-    text-align: center !important;
+.box-f {
+    text-align: center;
     color: white;
+    flex: 1;
+    min-width: 200px;
 }
-.box-f h2{
+
+.box-f h2 {
     font-size: 1.25em;
+    margin-bottom: 0.75em;
 }
-.box-f p{
-    margin-top: .75em;
-    margin-bottom: .75em;
 
-    font-size: .75em;
+.box-f p {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+    font-size: 0.75em;
+    line-height: 1.6;
 }
-.box-f a{
+
+.box-f a {
     color: white;
+    text-decoration: none;
 }
 
 /* icons for socials */
-.social-icons{
+.social-icons {
     margin-top: 10px;
     display: flex;
     gap: 15px;
+    justify-content: center;
 }
-.social-icons a{
+
+.social-icons a {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -971,32 +963,31 @@ footer{
     text-decoration: none;
     font-size: 1.25em;
     transition: 0.3s ease-in-out;
-    border: .125em solid transparent;
+    border: 0.125em solid transparent;
 }
 
-.social-icons a:hover{
+.social-icons a:hover {
     background-color: var(--clr-utsablue);
     color: white;
-    border: .125em solid white;
+    border: 0.125em solid white;
     transform: translateY(0.05em);
 }
 
 /* footer button */
-.btn-f{
+.btn-f {
     display: inline-block;
     text-decoration: none;
     color: white;
-    border: .2em solid white;
-    padding: .5em 1em;
-    font-size: .75em;
+    border: 0.2em solid white;
+    padding: 0.5em 1em;
+    font-size: 0.75em;
     background: transparent;
-    position: relative;
     cursor: pointer;
-
     border-radius: 2em;
-    transition: .5s;
+    transition: 0.5s;
 }
-.btn-f:hover{
+
+.btn-f:hover {
     transform: translateY(0.15em);
 }
 /* Outer container */
@@ -1084,25 +1075,121 @@ footer{
 #checkInMessage {
     display: none !important;
 }
-/* Hide Admin Mode, Attendance Log, and Check-In */
-h2:contains("Admin Mode"),
-h2:contains("Attendance Log (This Session)") {
-    display: none !important;
+
+
+
+/* =========================================================
+   HOME PAGE BUG FIXES ONLY
+   ---------------------------------------------------------
+   This section intentionally overrides existing styles
+   without changing the site’s structure or design system.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   FIX #1: HERO DOUBLE-HEIGHT ISSUE
+   ---------------------------------------------------------
+   Problem:
+   - .home already defines a 75vh container
+   - .page-header ALSO had a 75vh height
+   - Result: hero was effectively 150vh tall
+
+   Fix:
+   - Let .home control vertical space
+   - Force .page-header to fill available space ONLY
+---------------------------------------------------------- */
+
+.page-header {
+    /* Remove fixed viewport height stacking */
+    height: 100%;
+
+    /* Maintain intended hero height minus navbar */
+    min-height: calc(75vh - 12.5vh);
+
+    /* Preserve existing layout behavior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-h2:contains("Admin Mode") ~ *,
-h2:contains("Attendance Log (This Session)") ~ * {
-    display: none !important;
+
+/* ---------------------------------------------------------
+   FIX #2: "WE OFFER" SECTION LEFT-BIAS
+   ---------------------------------------------------------
+   Problem:
+   - .blocks had no layout responsibility
+   - .col was unconstrained, causing visual drift left
+   - Heading inherited flex context without width anchor
+
+   Fix:
+   - Make .blocks a true centering container
+   - Constrain .col width without redesign
+---------------------------------------------------------- */
+
+.blocks {
+    /* Explicit centering container */
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-/* Hide the entire demo-card for Admin Mode / Attendance Log */
-.demo-card h2:nth-child(1)[innerHTML*="Admin Mode"],
-.demo-card h2:nth-child(1)[innerHTML*="Attendance Log"] {
-    display: none !important;
+.blocks .col {
+    /* Lock content width so it cannot drift */
+    width: 100%;
+    max-width: 1100px;
+
+    /* Preserve original vertical flow */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Hide check-in button */
-#checkInBtn,
-#checkInMessage {
-    display: none !important;
+
+/* ---------------------------------------------------------
+   FIX #3: "WE OFFER" TITLE OVERSIZE / ALIGNMENT
+   ---------------------------------------------------------
+   Problem:
+   - .large heading had no width anchor
+   - Flex container caused visual left bias
+
+   Fix:
+   - Force full-width title
+   - Center text without resizing design intent
+---------------------------------------------------------- */
+
+.large {
+    width: 100%;
+    text-align: center;
+}
+
+
+/* ---------------------------------------------------------
+   FIX #4: FOOTER FLOATING / EXCESS HEIGHT
+   ---------------------------------------------------------
+   Problem:
+   - Footer used fixed 35vh height
+   - Caused vertical float and spacing distortion
+
+   Fix:
+   - Allow footer to size naturally to content
+---------------------------------------------------------- */
+/* Demo / Members hero */
+.demo-hero {
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+        135deg,
+        var(--clr-utsablue) 0%,
+        var(--clr-lightblue) 50%,
+        var(--clr-utsaorange) 100%
+    );
+}
+
+.demo-hero h1 {
+    color: white;
+    font-size: 3.5em;
+    text-align: center;
 }

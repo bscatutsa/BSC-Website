@@ -29,3 +29,19 @@ function toggleMenu() {
         menuIcon.innerHTML = "✖"; // change to X
     }
 }
+/* Hide current page link from navigation */
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        const linkFile = href.substring(href.lastIndexOf('/') + 1) || 'index.html';
+        
+        // Hide the link if it matches current page
+        if (linkFile === currentFile) {
+            link.parentElement.style.display = 'none';
+        }
+    });
+});
