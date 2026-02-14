@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- JS -->
+    <script defer src="scripts/layout.js"></script>
     <script defer src="scripts/script.js"></script>
 
     <!-- Icons -->
@@ -22,26 +23,7 @@
 
 <header class="home">
     <!-- nav bar -->
-    <nav class="nav-bar">
-        <div class="nav-logo">
-            <img src="images/bsc_logo.png" alt="Business Student Council logo" class="logo">
-        </div>
-
-        <div class="name" onclick="toggleMenu()">
-            <h3>Business Student Council <span class="arrow">▼</span></h3>
-        </div>
-
-        <div class="nav-links">
-            <ul>
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="pages/about.html">ABOUT</a></li>
-                <li><a href="pages/offer.html">WE OFFER</a></li>
-                <li><a href="pages/demo.html">MEMBERS</a></li>
-                <li><a href="pages/dev.html">DEV</a></li>
-                <li><a href="pages/contact.html" class="btn">CONTACT</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div id="site-nav"></div>
 
     <!-- hero -->
     <div class="page-header">
@@ -49,94 +31,65 @@
     </div>
 </header>
 
-<!-- background -->
-<section class="row">
-    <div class="pic">
-        <img src="images/background1.jpg" alt="BSC Group Photo">
-    </div>
+<!-- we offer -->
+<section class="blocks home-offer">
+    <div class="container">
+        <div class="col">
+            <h1 class="large hidden">WE OFFER</h1>
 
-    <div class="textbox l">
-        <h2 class="hidden">Background</h2>
-        <p class="hidden">
-            The Business Student Council (BSC) fosters relationships within the COB,
-            connecting faculty and Registered Student Organizations (RSOs) while developing
-            student leaders through professional development.
-        </p>
+            <div class="row n home-offer-row">
+                <a href="pages/meetings.html" class="img home-offer-card offer-card">
+                    <img src="images/meetings.jpg" class="rounded">
+                    <h3 class="hidden">Meetings</h3>
+                </a>
+
+                <a href="pages/events.html" class="img home-offer-card offer-card">
+                    <img src="images/events.jpg" class="rounded">
+                    <h3 class="hidden">Events</h3>
+                </a>
+            </div>
+
+            <div class="row n home-offer-row">
+                <a href="pages/opportunities.html" class="img home-offer-card offer-card">
+                    <img src="images/opportunities.jpg" class="rounded">
+                    <h3 class="hidden">Opportunities</h3>
+                </a>
+
+                <a href="pages/committees.html" class="img home-offer-card offer-card">
+                    <img src="images/committees.jpg" class="rounded">
+                    <h3 class="hidden">Committees</h3>
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 
 <hr class="sub-hr">
 
-<!-- we offer -->
-<section class="blocks">
-    <div class="col">
-        <h1 class="large hidden">WE OFFER</h1>
+<!-- background -->
+<section class="home-background">
+    <div class="container">
+        <div class="row">
+            <div class="pic">
+                <img src="images/background1.jpg" alt="BSC Group Photo" class="rounded">
+            </div>
 
-        <div class="row n">
-            <a href="pages/meetings.html" class="img">
-                <img src="images/meetings.jpg">
-                <h3 class="hidden">Meetings</h3>
-            </a>
-
-            <a href="pages/events.html" class="img">
-                <img src="images/events.jpg">
-                <h3 class="hidden">Events</h3>
-            </a>
-        </div>
-
-        <div class="row n">
-            <a href="pages/opportunities.html" class="img">
-                <img src="images/opportunities.jpg">
-                <h3 class="hidden">Opportunities</h3>
-            </a>
-
-            <a href="pages/committees.html" class="img">
-                <img src="images/committees.jpg">
-                <h3 class="hidden">Committees</h3>
-            </a>
+            <div class="textbox l">
+                <h2 class="hidden">Background</h2>
+                <p class="hidden">
+                    The Business Student Council (BSC) fosters relationships within the COB,
+                    connecting faculty and Registered Student Organizations (RSOs) while developing
+                    student leaders through professional development.
+                </p>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- footer section -->
-    <footer class="footer">
+    <div id="site-footer"></div>
 
-        <!-- sponsor -->
-        <div class="box-f">
-            <h2>Become a Sponsor!</h2>
-            <p>
-                If you are interested in supporting BSC, <br>
-                please contact us! We are always welcoming <br>
-                of new sponsors!
-            </p>
-            <a href="../pages/contact.html" class="btn-f">Contact Us</a>
-        </div>
 
-        <div class="vert-line"></div>
+</body>
 
-        <!-- get involved / mailing list -->
-        <div class="box-f">
-            <h2>Get Involved!</h2>
-            <p>
-                Join our biweekly newsletter and get updates <br>
-                over BSC's involvement and events!
-            </p>
-            <a href="../pages/contact.html" class="btn-f">Mailing List</a>
-        </div>
-
-        <div class="vert-line"></div>
-
-        <!-- contact -->
-        <div class="box-f">
-            <h2>Contact Information</h2>
-            <p><a href="mailto:bscatutsa@gmail.com" class="hyperlink f">E-Mail: bscatutsa@gmail.com</a></p>
-            <p><a href="https://utsa.campuslabs.com/engage/organ...s=" class="hyperlink f">RowdyLink: utsa.campuslabs.com/utsa-bsc</a></p>
-            <p><a href="https://linktr.ee/bscutsa" class="hyperlink f">Linktree: linktr.ee/bscutsa</a></p>
-
-            <div class="social-icons">
-                <a href="https://www.instagram.com/utsabsc"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.linkedin.com/company/busine...-council"><i class="fa-brands fa-linkedin-in"></i></a>
-            </div>
-        </div>
-
-    </footer>
+</html>
