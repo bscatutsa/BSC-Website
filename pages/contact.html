@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+   <!------ important links & webname ------>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Business Student Council</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../scripts/layout.js"></script>
+    <script defer src="../scripts/script.js"></script>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<!------ page layout ------>
+<body class="contact-page">
+
+    <header>
+        <!-- nav bar -->
+        <div id="site-nav"></div>
+
+        <!-- header title -->
+        <section class="page-header">
+            <img src="../images/contact.jpg">
+            <h1 class="hidden">CONTACT</h1>
+        </section>
+    </header>
+
+    <!-- contact -->
+    <section class="contact-section">
+        <div class="container">
+
+            <section class="contact-top">
+                <div class="newsletter-card card bsc-card">
+                    <h2 class="hidden">Join Our Newsletter</h2>
+                    <p class="hidden">Get biweekly updates and information for BSC!</p>
+
+                    <form action="https://api.web3forms.com/submit" method="POST" class="hidden">
+                        <input type="hidden" name="access_key" value="68eb89c9-8b7d-40ea-b3f7-96cbc6c5d4dd">
+                        <div class="name-row">
+                            <input type="text" name="name" placeholder="Enter your name" required>
+                            <input type="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="rect-btn">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="contact-card card bsc-card">
+                    <h2 class="hidden">Contact Info</h2>
+                    <h3 class="hidden">E-Mail</h3>
+                    <p><a href="mailto:bscatutsa@gmail.com" class="hyperlink b">bscatutsa@gmail.com</a></p>
+                    <h3 class="hidden">RowdyLink</h3>
+                    <p><a href="https://utsa.campuslabs.com/engage/organization/utsa-bsc" class="hyperlink b">utsa.campuslabs.com/engage/organization/utsa-bsc</a></p>
+                    <h3 class="hidden">Linktree</h3>
+                    <p><a href="https://linktr.ee/bscutsa" class="hyperlink b">linktr.ee/bscutsa</a></p>
+
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/utsabsc" target="_blank"><i class="fa-brands fa-instagram"></i></a>    
+                        <a href="https://www.linkedin.com/company/business-student-council" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>  
+                </div>
+            </section>
+
+            <section class="sponsor-section hidden">
+                <h1 class="hidden">Become A Sponsor!</h1>
+                <p class="hidden">
+                    Partnering with BSC as a sponsor provides your brand with exclusive visibility and engagement opportunities within our community. Our sponsorship packages offer tailored benefits, including brand promotions, event recognition, and direct audience access to maximize your impact.
+                </p>
+
+                <p class="hidden">
+                    For more details, please contact us regarding any questions you have. You can also download our
+                    <a href="../downloads/Sponsorship Package.pdf" target="_blank" class="hyperlink">Sponsorship Package</a>
+                    presentation for further information.
+                </p>
+
+                <hr>
+
+                <form action="https://api.web3forms.com/submit" method="POST" class="sponsor-body">
+                    <input type="hidden" name="access_key" value="68eb89c9-8b7d-40ea-b3f7-96cbc6c5d4dd">
+
+                    <h2 class="hidden">Name</h2>
+                    <div class="name-row hidden">
+                        <input type="text" name="first_name" placeholder="First Name" required>
+                        <input type="text" name="last_name" placeholder="Last Name" required>
+                    </div>
+
+                    <h2 class="hidden">Email Address</h2>
+                    <div class="s-row hidden">
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <h2 class="hidden">Organization Name</h2>
+                    <div class="s-row hidden">
+                        <input type="text" name="organization" placeholder="Organization" required>
+                    </div>
+
+                    <h2 class="hidden">Message</h2>
+                    <div class="s-row hidden">
+                        <textarea name="message" placeholder="Message" class="message" required></textarea>
+                    </div>
+
+                    <div class="form-actions hidden">
+                        <button type="submit" class="rect-btn">Submit</button>
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </section>
+
+    <!-- footer section -->
+    <div id="site-footer"></div>
+
+</body>
+
+</html>
+
+
