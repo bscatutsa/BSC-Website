@@ -109,3 +109,138 @@ document.addEventListener('layout:ready', initializeNavigation);
 
 /* Final layout sync after all assets load. */
 window.addEventListener('load', syncNavOffset);
+
+/*
+  BSC Induction Countdown
+  September 8, 2026 @ 5:30 PM
+  San Antonio / Central Time
+*/
+
+function initializeInductionCountdown() {
+
+    const daysEl =
+        document.getElementById('bscCountdownDays');
+
+    const hoursEl =
+        document.getElementById('bscCountdownHours');
+
+    const minutesEl =
+        document.getElementById('bscCountdownMinutes');
+
+    const secondsEl =
+        document.getElementById('bscCountdownSeconds');
+
+    const statusEl =
+        document.getElementById('bscCountdownStatus');
+
+
+    // Countdown is not on this page.
+    if (
+        !daysEl ||
+        !hoursEl ||
+        !minutesEl ||
+        !secondsEl
+    ) {
+        return;
+    }
+
+
+    const inductionTime =
+        new Date(
+            '2026-09-08T17:30:00-05:00'
+        ).getTime();
+
+
+    function pad(value) {
+        return String(value)
+            .padStart(2, '0');
+    }
+
+
+    function updateCountdown() {
+
+        const remaining =
+            inductionTime - Date.now();
+
+
+        if (remaining <= 0) {
+
+            daysEl.textContent = '00';
+            hoursEl.textContent = '00';
+            minutesEl.textContent = '00';
+            secondsEl.textContent = '00';
+
+
+            if (statusEl) {
+                statusEl.textContent =
+                    'Induction is here. Welcome to BSC!';
+            }
+
+            return;
+        }
+
+
+        const days =
+            Math.floor(
+                remaining /
+                (1000 * 60 * 60 * 24)
+            );
+
+
+        const hours =
+            Math.floor(
+                (
+                    remaining %
+                    (1000 * 60 * 60 * 24)
+                ) /
+                (1000 * 60 * 60)
+            );
+
+
+        const minutes =
+            Math.floor(
+                (
+                    remaining %
+                    (1000 * 60 * 60)
+                ) /
+                (1000 * 60)
+            );
+
+
+        const seconds =
+            Math.floor(
+                (
+                    remaining %
+                    (1000 * 60)
+                ) /
+                1000
+            );
+
+
+        daysEl.textContent =
+            pad(days);
+
+        hoursEl.textContent =
+            pad(hours);
+
+        minutesEl.textContent =
+            pad(minutes);
+
+        secondsEl.textContent =
+            pad(seconds);
+    }
+
+
+    updateCountdown();
+
+    window.setInterval(
+        updateCountdown,
+        1000
+    );
+}
+
+
+document.addEventListener(
+    'DOMContentLoaded',
+    initializeInductionCountdown
+);

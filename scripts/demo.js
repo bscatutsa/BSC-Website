@@ -3,8 +3,18 @@
 // =====================================================
 
 // ---- LIVE CSV EXPORT FROM GOOGLE SHEETS ----
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnVIp76kMhhrA1xalmb_c6AgKzmJ8XfVvgfMJ9vrFvZ-lQae8mzFJB28zH68GNoI5kwXhib3S8joz6/pub?gid=1345780989&single=true&output=csv";
+const ROSTER_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT62ok2BftO2REcTiPCELNjRowI9IznFSx650B3dpqwFW-1LvkALjLyzD-DMNZ9WbPYgzj4Lfxn2j5m/pub?gid=440457951&single=true&output=csv";
+  
+
+const LOG_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT62ok2BftO2REcTiPCELNjRowI9IznFSx650B3dpqwFW-1LvkALjLyzD-DMNZ9WbPYgzj4Lfxn2j5m/pub?gid=0&single=true&output=csv";
+
+const EVENTS_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT62ok2BftO2REcTiPCELNjRowI9IznFSx650B3dpqwFW-1LvkALjLyzD-DMNZ9WbPYgzj4Lfxn2j5m/pub?gid=996391890&single=true&output=csv";
+
+
+
 
 let memberDB = {};
 let currentMember = null;
@@ -272,17 +282,35 @@ function renderChartByMode(member) {
 // Load member DB from published Google Sheets CSV.
 async function loadMembersFromSheet() {
   try {
-    if (window.fetchAndParse && typeof window.fetchAndParse === "function") {
-      memberDB = await window.fetchAndParse(SHEET_URL);
-    } else if (window.parseMembersCSV && typeof window.parseMembersCSV === "function") {
-      const res = await fetch(SHEET_URL);
-      const csv = await res.text();
-      memberDB = window.parseMembersCSV(csv);
-    } else {
-      throw new Error("Data parser not available");
+
+    if (
+      !window.fetchAndParseV3 ||
+      typeof window.fetchAndParseV3 !== "function"
+    ) {
+      throw new Error(
+        "V3 data parser is not available."
+      );
     }
+
+    memberDB = await window.fetchAndParseV3(
+      ROSTER_URL,
+      LOG_URL,
+      EVENTS_URL
+    );
+
+    console.log(
+      "BSC V3 member database loaded:",
+      memberDB
+    );
+
   } catch (err) {
-    console.error("CSV PARSE FAILED:", err);
+
+    console.error(
+      "V3 CSV LOAD FAILED:",
+      err
+    );
+
+    memberDB = {};
   }
 }
 
@@ -574,7 +602,6 @@ function renderMember(member) {
   renderCategoryBadges(member);
   renderEvents(member);
 }
-
 // --------------------------------------------------
 // DOM LOGIC
 // --------------------------------------------------
@@ -586,6 +613,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadMembersFromSheet();
   renderLeaderboard(memberDB);
 
+  // ------------------------------------------
+  // AUTO-LOAD MEMBER FROM URL
+  // Example: demo.html?member=zwv390
+  // ------------------------------------------
+  const params = new URLSearchParams(window.location.search);
+
+  const memberFromUrl = (params.get("member") || "")
+    .trim()
+    .toLowerCase();
+
+  if (memberFromUrl && memberDB[memberFromUrl]) {
+    currentMember = { ...memberDB[memberFromUrl] };
+
+    utsaInput.value = memberFromUrl;
+
+    document.getElementById("lookupMessage").textContent =
+      `Loaded ${currentMember.name}.`;
+
+    renderMember(currentMember);
+  }
+
+  // ------------------------------------------
+  // CHART TOGGLE
+  // ------------------------------------------
   const toggleKnob = document.getElementById("chartToggleKnob");
   const toggleOptions = document.querySelectorAll(".chart-toggle-option");
 
@@ -594,41 +645,63 @@ document.addEventListener("DOMContentLoaded", async () => {
       chartMode = opt.dataset.mode;
 
       if (toggleKnob) {
-        toggleKnob.style.left = chartMode === "donut" ? "3px" : "107px";
+        toggleKnob.style.left =
+          chartMode === "donut"
+            ? "3px"
+            : "107px";
       }
 
-      toggleOptions.forEach(o => o.classList.remove("active"));
+      toggleOptions.forEach(o => {
+        o.classList.remove("active");
+      });
+
       opt.classList.add("active");
 
-      if (currentMember) renderChartByMode(currentMember);
+      if (currentMember) {
+        renderChartByMode(currentMember);
+      }
     });
   });
 
-  // Lookup by myUTSA ID and refresh the card state.
+  // ------------------------------------------
+  // MEMBER LOOKUP
+  // ------------------------------------------
   function doLookup() {
-    const id = (utsaInput.value || "").trim().toLowerCase();
+    const id = (utsaInput.value || "")
+      .trim()
+      .toLowerCase();
 
     if (!id) {
-      document.getElementById("lookupMessage").textContent = "Enter a myUTSA ID.";
+      document.getElementById("lookupMessage").textContent =
+        "Enter a myUTSA ID.";
+
       renderMember(null);
       currentMember = null;
       return;
     }
 
     if (!memberDB[id]) {
-      document.getElementById("lookupMessage").textContent = `No member found for "${id}".`;
+      document.getElementById("lookupMessage").textContent =
+        `No member found for "${id}".`;
+
       renderMember(null);
       currentMember = null;
       return;
     }
 
     currentMember = { ...memberDB[id] };
-    document.getElementById("lookupMessage").textContent = `Loaded ${currentMember.name}.`;
+
+    document.getElementById("lookupMessage").textContent =
+      `Loaded ${currentMember.name}.`;
+
     renderMember(currentMember);
   }
 
   lookupBtn.addEventListener("click", doLookup);
+
   utsaInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") doLookup();
+    if (e.key === "Enter") {
+      doLookup();
+    }
   });
 });
