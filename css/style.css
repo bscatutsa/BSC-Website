@@ -2444,3 +2444,481 @@ button:focus-visible {
         border-radius: inherit;
     }
 }
+/* =========================================================
+   INDUCTION COUNTDOWN
+========================================================= */
+
+.induction-countdown-section {
+    padding: 3rem 0;
+    background: #ffffff;
+}
+
+.induction-countdown-card {
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 3rem 2rem;
+
+    border-radius: 20px;
+    border: 1px solid var(--bsc-light-gray);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--bsc-primary),
+            #284f78
+        );
+
+    color: white;
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+/* orange accent strip */
+.induction-countdown-card::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background: var(--bsc-utsa-orange);
+}
+
+
+.induction-copy {
+    max-width: 650px;
+}
+
+
+.induction-eyebrow {
+    display: inline-block;
+
+    margin-bottom: 0.75rem;
+
+    color: var(--bsc-utsa-orange);
+
+    font-size: 0.8rem;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+
+.induction-copy h2 {
+    margin-bottom: 0.75rem;
+
+    color: white;
+
+    font-size:
+        clamp(1.8rem, 4vw, 2.6rem);
+
+    font-weight: 700;
+}
+
+
+.induction-copy p {
+    color:
+        rgba(255, 255, 255, 0.85);
+
+    line-height: 1.6;
+}
+
+
+/* COUNTDOWN */
+
+.induction-countdown-grid {
+    width: 100%;
+    max-width: 660px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 1rem;
+
+    margin: 2rem 0;
+}
+
+
+.countdown-unit {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+
+    padding: 1.25rem 0.75rem;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.09);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.16);
+}
+
+
+.countdown-unit strong {
+    color: white;
+
+    font-size:
+        clamp(1.8rem, 5vw, 3rem);
+
+    line-height: 1;
+
+    font-weight: 700;
+}
+
+
+.countdown-unit span {
+    margin-top: 0.5rem;
+
+    color:
+        rgba(255, 255, 255, 0.75);
+
+    font-size: 0.78rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+}
+
+
+/* ACTION BUTTONS */
+
+.induction-actions {
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 0.85rem;
+}
+
+
+.induction-actions .btn {
+    min-width: 175px;
+
+    border-radius: 10px;
+}
+
+
+.induction-apply-btn {
+    background:
+        var(--bsc-utsa-orange);
+
+    border:
+        2px solid
+        var(--bsc-utsa-orange);
+
+    color: white;
+}
+
+
+.induction-apply-btn:hover {
+    background: #d94d1c;
+    border-color: #d94d1c;
+
+    color: white;
+}
+
+
+.induction-news-btn {
+    background: transparent;
+
+    border:
+        2px solid white;
+
+    color: white;
+}
+
+
+.induction-news-btn:hover {
+    background: white;
+
+    color:
+        var(--bsc-primary);
+}
+
+
+.induction-status {
+    min-height: 1.25rem;
+
+    margin-top: 1.25rem;
+
+    color:
+        rgba(255, 255, 255, 0.78);
+
+    font-size: 0.85rem;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .induction-countdown-section {
+        padding: 2rem 0;
+    }
+
+
+    .induction-countdown-card {
+        padding:
+            2.25rem 1rem;
+
+        border-radius: 16px;
+    }
+
+
+    .induction-countdown-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 0.75rem;
+    }
+
+
+    .countdown-unit {
+        padding:
+            1rem 0.5rem;
+    }
+
+
+    .induction-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+
+    .induction-actions .btn {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   BSC INDUCTION COUNTDOWN
+========================================================= */
+
+#bsc-induction-countdown {
+    padding: 2.5rem 1rem;
+    background: #ffffff;
+}
+
+#bsc-induction-countdown .bsc-countdown-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+
+    padding: 2.75rem 2rem;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1f3d63,
+            #2f5d8a
+        );
+
+    color: #ffffff;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+#bsc-induction-countdown .bsc-countdown-copy {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+#bsc-induction-countdown .bsc-countdown-eyebrow {
+    display: inline-block;
+
+    margin-bottom: 0.75rem;
+
+    color: #F15A22;
+
+    font-size: 0.8rem;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+#bsc-induction-countdown h2 {
+    margin: 0 0 0.75rem;
+
+    color: #ffffff;
+
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+#bsc-induction-countdown p {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.85);
+
+    line-height: 1.6;
+}
+
+#bsc-induction-countdown .bsc-countdown-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 1rem;
+
+    max-width: 700px;
+
+    margin: 2rem auto;
+}
+
+#bsc-induction-countdown .bsc-countdown-unit {
+    padding: 1.25rem 0.75rem;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+}
+
+#bsc-induction-countdown .bsc-countdown-unit strong {
+    display: block;
+
+    color: #ffffff;
+
+    font-size: clamp(1.8rem, 5vw, 3rem);
+
+    line-height: 1;
+}
+
+#bsc-induction-countdown .bsc-countdown-unit span {
+    display: block;
+
+    margin-top: 0.5rem;
+
+    color:
+        rgba(255, 255, 255, 0.75);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+}
+
+#bsc-induction-countdown .bsc-countdown-actions {
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 0.85rem;
+}
+
+#bsc-induction-countdown .bsc-countdown-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 180px;
+
+    padding: 0.8rem 1.25rem;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+#bsc-induction-countdown .bsc-countdown-btn-primary {
+    background: #F15A22;
+
+    border: 2px solid #F15A22;
+
+    color: #ffffff;
+}
+
+#bsc-induction-countdown .bsc-countdown-btn-secondary {
+    background: transparent;
+
+    border: 2px solid #ffffff;
+
+    color: #ffffff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    #bsc-induction-countdown .bsc-countdown-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    #bsc-induction-countdown .bsc-countdown-btn-primary:hover {
+        background: #d94d1c;
+        border-color: #d94d1c;
+    }
+
+    #bsc-induction-countdown .bsc-countdown-btn-secondary:hover {
+        background: #ffffff;
+        color: #1f3d63;
+    }
+}
+
+@media (max-width: 600px) {
+
+    #bsc-induction-countdown {
+        padding: 1.75rem 1rem;
+    }
+
+    #bsc-induction-countdown .bsc-countdown-inner {
+        padding: 2rem 1rem;
+    }
+
+    #bsc-induction-countdown .bsc-countdown-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 0.75rem;
+    }
+
+    #bsc-induction-countdown .bsc-countdown-actions {
+        flex-direction: column;
+    }
+
+    #bsc-induction-countdown .bsc-countdown-btn {
+        width: 100%;
+    }
+}
